@@ -44,4 +44,24 @@ public String getAmountFormatted(){
 
         return "$"+amount;
 }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
 }
