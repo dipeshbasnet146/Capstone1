@@ -24,11 +24,7 @@ public class Main {
 
 
 
-
-
-
-
-    public class DateComparator implements Comparator<TransactionRecord> {
+    public static class DateComparator implements Comparator<TransactionRecord> {
         @Override
         public int compare(TransactionRecord o1, TransactionRecord o2) {
             if (o1.getDate().equals(o2.getDate())) {
@@ -38,8 +34,6 @@ public class Main {
             }
         }
     }
-
-
 
 
 
@@ -85,10 +79,9 @@ public class Main {
 
 
 
-
-
         // transactions.sort(new DateComparator());
-        // todo; fix the sort method
+            Collections.sort(transactions, new DateComparator());
+
 
         switch (ledgerChoice) {
             case 'H', 'h' -> showMainMenu(inputScanner);
