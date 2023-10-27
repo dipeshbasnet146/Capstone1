@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class Main {
@@ -20,10 +21,32 @@ public class Main {
         showMainMenu(inputScanner);
     }
 
-    public static void showMainMenu(Scanner inputScanner) {
 
+
+
+
+
+
+
+    public class DateComparator implements Comparator<TransactionRecord> {
+        @Override
+        public int compare(TransactionRecord o1, TransactionRecord o2) {
+            if (o1.getDate().equals(o2.getDate())) {
+                return o1.getTime().compareTo(o2.getTime());
+            } else {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+        }
+    }
+
+
+
+
+
+
+    public static void showMainMenu(Scanner inputScanner) {
         System.out.print("""
-                                                   -MAIN MENU-
+                -MAIN MENU-
                 Follow the instructions to proceed:
                 'D' Add Deposit
                 'P' Make Payment
@@ -37,23 +60,33 @@ public class Main {
             case 'L', 'l' -> showLedger(inputScanner);
             case 'P', 'p' -> processPayment(inputScanner);
             case 'D', 'd' -> processDeposit(inputScanner);
+            case 'X', 'x' -> System.exit(0);
+            default -> {
+                System.out.println("Invalid choice. Please try again.");
+                showMainMenu(inputScanner);
+            }
         }
     }
 
-    public static void showLedger(Scanner inputScanner) {
+        public static void showLedger (Scanner inputScanner){
 
-        System.out.print("""
-                                                   -LEDGER MENU-
-                Follow the instructions to proceed:
-                'A' All entries
-                'D' Deposits
-                'P' Payments
-                'R' Reports
-                'H' Home
-                """);
+            System.out.print("""
+                                                       -LEDGER MENU-
+                    Follow the instructions to proceed:
+                    'A' All entries
+                    'D' Deposits
+                    'P' Payments
+                    'R' Reports
+                    'H' Home
+                    """);
 
-        char ledgerChoice = inputScanner.next().charAt(0);
-        ArrayList<TransactionRecord> transactions = fetchAllEntries();
+            char ledgerChoice = inputScanner.next().charAt(0);
+            ArrayList<TransactionRecord> transactions = fetchAllEntries();
+
+
+
+
+
         // transactions.sort(new DateComparator());
         // todo; fix the sort method
 
@@ -76,7 +109,9 @@ public class Main {
                 continueOrExitPrompt(inputScanner);
             }
         }
+
     }
+
 
     public static void processPayment(Scanner inputScanner) {
         System.out.println("Enter the Date in DD/MM/YYYY format: ");
@@ -156,7 +191,9 @@ public class Main {
                 String description = data[2];
                 String vendor = data[3];
                 double amount = Double.parseDouble(data[4].replace("$", ""));
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
                 entries.add(new TransactionRecord(LocalDate.parse(date,formatter), LocalTime.parse(time), description, vendor, amount));
             }
             bufferedReader.close();
@@ -188,6 +225,23 @@ public class Main {
         }
     }
 
+
+    public static void displayPrevioustMonth(ArrayList<TransactionRecord> transactions) {
+        LocalDate previousMonthDate = LocalDate.now().minusMonths(1);
+        System.out.print("""
+            -Transactions for Previous Month-
+            """);
+        System.out.printf("%-16s %-10s %-35s %-30s %-10s%n", "Date", "Time", "Description", "Vendor", "Amt");
+        for (TransactionRecord record : transactions) {
+            if (record.getDate().getMonthValue() == previousMonthDate.getMonthValue() && record.getDate().getYear() == previousMonthDate.getYear()) {
+                printTransactionRecord(record);
+            }
+        }
+    }
+
+
+
+
     public static void showReportsMenu(Scanner inputScanner, ArrayList<TransactionRecord> transactions) {
 
         System.out.print("""
@@ -215,27 +269,18 @@ public class Main {
 
 
 
-            case 'P', 'p' -> {
-                displayPreviousMonth(transactions);
+             case 'P', 'p' -> {
+                displayPrevioustMonth(transactions);
                 continueOrExitPrompt(inputScanner);
             }
+
+
 
             case 'Y', 'y' -> {
-                displayThisYear(transactions);
+                displayCurrentMonth(transactions);
                 continueOrExitPrompt(inputScanner);
             }
 
-
-            case 'L', 'l' -> {
-                displayLastYear(transactions);
-                continueOrExitPrompt(inputScanner);
-            }
-
-
-            case 'V', 'v' -> {
-                displayVendor(transactions);
-                continueOrExitPrompt(inputScanner);
-            }
 
 
             case 'B', 'b' -> {
@@ -265,82 +310,6 @@ public class Main {
         }
     }
 
-    public static void displayPreviousMonth(ArrayList<TransactionRecord> myLists, String currentDate)
-    {
-        int currentMonth = Integer.parseInt(currentDate.substring(3,5));
-        String previousMonth = String.format("%02d/%s",currentMonth-1,currentDate.substring(6));
-        System.out.println("PreviousMonth: "+ previousMonth);
-        boolean isEmpty = true;
-        for(int i= myLists.size()-1; i>=0; i--)
-        {
-            if(myLists.get(i).getDate().substring(3).equals(previousMonth)) {
-                String s = String.format("%-16s %-10s %-35s %-30s %.2f", myLists.get(i).getDate(), myLists.get(i).getTime(), myLists.get(i).getDescription(), myLists.get(i).getVendor(), myLists.get(i).getAmount());
-                System.out.println(s);
-                isEmpty = false;
-            }
-
-        }
-        if(isEmpty)
-        {
-            System.out.println("You do not have any transactions on previous month");
-        }
-
-    }
-
-    public static void displayThisYear(ArrayList<TransactionRecord> myLists, String currentDate)
-    {
-        String currentYear = currentDate.substring(6);
-        boolean isEmpty = true;
-        for(int i= myLists.size()-1; i>=0; i--)
-        {
-            if(myLists.get(i).getDate().substring(6).equals(currentYear)) {
-                String s = String.format("%-16s %-10s %-35s %-30s %.2f", myLists.get(i).getDate(), myLists.get(i).getTime(), myLists.get(i).getDescription(), myLists.get(i).getVendor(), myLists.get(i).getAmount());
-                System.out.println(s);
-                isEmpty = false;
-            }
-        }
-        if(isEmpty)
-        {
-            System.out.println("You do not have any transactions for this year.");
-        }
-
-        public static void displayLastYear(ArrayList<TransactionRecord>myLists, String currentDate)
-        {
-            int currentYear = Integer.parseInt(currentDate.substring(6));
-            String previousYear = ""+(currentYear-1);
-            System.out.println("PreviousYear: "+ previousYear);
-            boolean isEmpty = true;
-            for(int i= myLists.size()-1; i>=0; i--)
-            {
-                if(myLists.get(i).getDate().substring(6).equals(previousYear)) {
-                    String s = String.format("%-16s %-10s %-35s %-30s %.2f", myLists.get(i).getDate(), myLists.get(i).getTime(), myLists.get(i).getDescription(), myLists.get(i).getVendor(), myLists.get(i).getAmount());
-                    System.out.println(s);
-                    isEmpty = false;
-                }
-            }
-            if(isEmpty)
-            {
-                System.out.println("You do not have any transactions on previous year");
-            }
-        }
-
-        public static void displayVendor(ArrayList<TransactionRecord>myLists, Scanner scanner)
-        {
-            displayVendor(myLists);
-            System.out.println("Enter the vendor name: ");
-            String vendorInput = scanner.nextLine();
-            vendorInput = scanner.nextLine();
-            for(int i= myLists.size()-1; i>=0; i--)
-            {
-                if(myLists.get(i).getVendor().equals(vendorInput)) {
-                    String s = String.format("%-16s %-10s %-35s %-30s %.2f", myLists.get(i).getDate(), myLists.get(i).getTime(), myLists.get(i).getDescription(), myLists.get(i).getVendor(), myLists.get(i).getAmount());
-                    System.out.println(s);
-                }
-            }
-
-
-        }
-    }
 
     public static void printTransactionRecord(TransactionRecord record) {
         System.out.printf("%-16s %-10s %-35s %-30s %-10s%n", record.getDate(), record.getTime(), record.getDescription(), record.getVendor(), record.getAmountFormatted());
@@ -355,12 +324,6 @@ public class Main {
             System.exit(0);
         }
     }
-
-
-
-
-
-
 }
 
 // Class TransactionRecord and DateComparator can be kept the same as before.

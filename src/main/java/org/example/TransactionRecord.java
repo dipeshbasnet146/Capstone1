@@ -40,6 +40,7 @@ public class TransactionRecord {
     public String getDescription() {
         return description;
     }
+
 public String getAmountFormatted(){
 
         return "$"+amount;
