@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.time.format.DateTimeParseException;
+
 
 public class Main {
 
@@ -20,6 +22,43 @@ public class Main {
         System.out.print("Welcome to Financial Office!!!\n");
         showMainMenu(inputScanner);
     }
+
+
+
+
+    class InputValidator {
+
+        public static boolean isValidDate(String date) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            try {
+                LocalDate.parse(date, formatter);
+                return true;
+            } catch (DateTimeParseException e) {
+                return false;
+            }
+        }
+
+        public static boolean isValidTime(String time) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            try {
+                LocalTime.parse(time, formatter);
+                return true;
+            } catch (DateTimeParseException e) {
+                return false;
+            }
+        }
+
+        public static boolean isValidAmount(double amount) {
+            return amount >= 0;
+        }
+
+        // You can add more validation methods as needed
+    }
+
+
+
+
+
 
 
 
@@ -281,10 +320,7 @@ public class Main {
             }
 
 
-
-
         }
-
 
 
     }
