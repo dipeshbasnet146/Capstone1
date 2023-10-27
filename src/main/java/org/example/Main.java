@@ -274,31 +274,7 @@ public class Main {
 
 
 
-    /* public static void showReportsMenu(Scanner inputScanner, ArrayList<TransactionRecord> transactions) {
 
-
-
-        char reportChoice = inputScanner.next().charAt(0);
-        inputScanner.nextLi System.out.print("""
-                                -REPORTS MENU-
-             """);
-
-        System.out.print("""
-                Follow the instructions to proceed:
-                'M' This Month
-                'P' Previous Month
-                'Y' This Year
-                'L' Last Year
-                'V' By Vendor
-                'B' Back
-                """);ne();
-
-        switch (reportChoice) {
-
-     */
-
-
-// ... [existing code]
 
 
 
@@ -319,8 +295,6 @@ public class Main {
 
         char reportChoice = inputScanner.next().charAt(0);
         inputScanner.nextLine();  // This will consume the newline
-
-
 
 
 
@@ -357,7 +331,7 @@ public class Main {
 
 
             case 'Y', 'y' -> {
-                displayCurrentMonth(transactions);
+                displayCurrentYear(transactions);
                 continueOrExitPrompt(inputScanner);
             }
 
@@ -375,6 +349,18 @@ public class Main {
             // ... [existing cases]
         }
     }
+
+    public static void displayCurrentYear(ArrayList<TransactionRecord> transactions) {
+        int currentYear = LocalDate.now().getYear();
+        System.out.print("\n-Transactions for This Year-\n");
+        System.out.printf("%-16s %-10s %-35s %-30s %-10s%n", "Date", "Time", "Description", "Vendor", "Amt");
+        for (TransactionRecord record : transactions) {
+            if (record.getDate().getYear() == currentYear) {
+                printTransactionRecord(record);
+            }
+        }
+    }
+
 
     public static void displayLastYear(ArrayList<TransactionRecord> transactions) {
         int lastYear = LocalDate.now().getYear() - 1;
