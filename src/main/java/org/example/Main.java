@@ -274,9 +274,12 @@ public class Main {
 
 
 
-    public static void showReportsMenu(Scanner inputScanner, ArrayList<TransactionRecord> transactions) {
+    /* public static void showReportsMenu(Scanner inputScanner, ArrayList<TransactionRecord> transactions) {
 
-        System.out.print("""
+
+
+        char reportChoice = inputScanner.next().charAt(0);
+        inputScanner.nextLi System.out.print("""
                                 -REPORTS MENU-
              """);
 
@@ -288,12 +291,57 @@ public class Main {
                 'L' Last Year
                 'V' By Vendor
                 'B' Back
-                """);
-
-        char reportChoice = inputScanner.next().charAt(0);
-        inputScanner.nextLine();
+                """);ne();
 
         switch (reportChoice) {
+
+     */
+
+
+// ... [existing code]
+
+
+
+
+    public static void showReportsMenu(Scanner inputScanner, ArrayList<TransactionRecord> transactions) {
+        System.out.print("""
+                        -REPORTS MENU-
+    """);
+        System.out.print("""
+            Follow the instructions to proceed:
+            'M' This Month
+            'P' Previous Month
+            'Y' This Year
+            'L' Last Year
+            'V' By Vendor
+            'B' Back
+    """);
+
+        char reportChoice = inputScanner.next().charAt(0);
+        inputScanner.nextLine();  // This will consume the newline
+
+
+
+
+
+
+        switch (reportChoice) {
+            // ... [existing cases]
+
+            case 'L', 'l' -> {
+                displayLastYear(transactions);
+                continueOrExitPrompt(inputScanner);
+            }
+
+            case 'V', 'v' -> {
+                System.out.println("Enter Vendor Name:");
+                String vendor = inputScanner.nextLine();
+                displayByVendor(transactions, vendor);
+                continueOrExitPrompt(inputScanner);
+            }
+
+
+
             case 'M', 'm' -> {
                 displayCurrentMonth(transactions);
                 continueOrExitPrompt(inputScanner);
@@ -301,7 +349,7 @@ public class Main {
 
 
 
-             case 'P', 'p' -> {
+            case 'P', 'p' -> {
                 displayPrevioustMonth(transactions);
                 continueOrExitPrompt(inputScanner);
             }
@@ -320,10 +368,44 @@ public class Main {
             }
 
 
+
+
+
+
+            // ... [existing cases]
         }
-
-
     }
+
+    public static void displayLastYear(ArrayList<TransactionRecord> transactions) {
+        int lastYear = LocalDate.now().getYear() - 1;
+        System.out.print("\n-Transactions for Last Year-\n");
+        System.out.printf("%-16s %-10s %-35s %-30s %-10s%n", "Date", "Time", "Description", "Vendor", "Amt");
+        for (TransactionRecord record : transactions) {
+            if (record.getDate().getYear() == lastYear) {
+                printTransactionRecord(record);
+            }
+        }
+    }
+
+    public static void displayByVendor(ArrayList<TransactionRecord> transactions, String vendor) {
+        System.out.print("\n-Transactions for Vendor: " + vendor + "-\n");
+        System.out.printf("%-16s %-10s %-35s %-30s %-10s%n", "Date", "Time", "Description", "Vendor", "Amt");
+        for (TransactionRecord record : transactions) {
+            if (record.getVendor().equalsIgnoreCase(vendor)) {
+                printTransactionRecord(record);
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 
     public static void displayCurrentMonth(ArrayList<TransactionRecord> transactions) {
         LocalDateTime currentDateTime = LocalDateTime.now();
